@@ -1,0 +1,4 @@
+lambda_value,test_accuracy,sparsity_percent,best_epoch,best_accuracy,checkpoint_path,gate_histogram_path
+0.0,34.61,0.0,6,45.33,outputs_tuned/model_lambda_0.pt,outputs_tuned/gate_histogram_lambda_0.png
+5e-05,46.85,91.31907224655151,9,49.37,outputs_tuned/model_lambda_5e-05.pt,outputs_tuned/gate_histogram_lambda_5e-05.png
+0.0005,31.88,87.27739453315735,7,43.6,outputs_tuned/model_lambda_0.0005.pt,outputs_tuned/gate_histogram_lambda_0.0005.png
