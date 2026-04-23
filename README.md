@@ -1,31 +1,116 @@
-# Tredence AI Engineering Case Study
+````markdown
+# 🚀 Tredence AI Engineering Case Study  
+## Self-Pruning Neural Network (PyTorch)
 
-This repository contains a PyTorch implementation of **The Self-Pruning Neural Network** case study.
+This project implements a **self-pruning neural network** that learns to remove unnecessary weights during training using learnable gates and L1 regularization.
 
-## Files
+---
 
-- `self_pruning_cifar10.py` - complete source code for `PrunableLinear`, the CIFAR-10 model, training, evaluation, sparsity reporting, and gate histogram generation.
-- `REPORT.md` - short explanation of the method and result table format.
-- `requirements.txt` - Python dependencies.
+## 🧠 Overview
 
-## Quick Start
+- Each weight is paired with a learnable **gate**
+- Gates control whether a connection is active
+- The model learns to **suppress weak connections automatically**
 
-```bash
-python3 -m pip install -r requirements.txt
-python3 self_pruning_cifar10.py --smoke-test
-python3 self_pruning_cifar10.py --epochs 10 --lambdas 0 5e-5 5e-4 --device auto --num-workers 0 --output-dir outputs_tuned
+---
+
+## ⚙️ Method
+
+```python
+pruned_weights = weight * sigmoid(gate_scores)
+````
+
+**Loss Function:**
+
+[
+\text{Loss} = \text{CrossEntropy} + \lambda \cdot \sum \text{sigmoid}(gate_scores)
+]
+
+* CrossEntropy → accuracy
+* L1 on gates → sparsity
+* λ → controls pruning strength
+
+---
+
+## 🏗️ Architecture
+
+* Dataset: CIFAR-10
+* Model: MLP with custom `PrunableLinear` layers
+* Activations: ReLU + Dropout
+
+---
+
+## 📁 Structure
+
+```
+self_pruning_cifar10.py   # Model + training + evaluation
+REPORT.md                 # Explanation + results
+requirements.txt
+results/                  # Outputs
 ```
 
-The experiment writes outputs to the selected output directory, including:
+---
 
-- `results.csv`
-- `results.json`
-- `results_table.md`
-- `model_lambda_*.pt`
-- `gate_histogram_lambda_*.png`
+## 🚀 Quick Start
 
-## Notes
+```bash
+pip install -r requirements.txt
+python self_pruning_cifar10.py --smoke-test
+python self_pruning_cifar10.py --epochs 10 --lambdas 0 5e-5 5e-4
+```
 
-The script uses a feed-forward MLP with custom `PrunableLinear` layers, as requested in the assignment. For quick iteration, use `--train-subset` and `--test-subset`; for final reporting, run on the full CIFAR-10 train and test sets.
+---
 
-The submitted run artifacts are in `results/`. Large checkpoints are left in the generated output directory and are not required for reviewing the source code and report.
+## 📊 Results
+
+| Lambda | Accuracy   | Sparsity   |
+| ------ | ---------- | ---------- |
+| 0      | 34.61%     | 0.00%      |
+| 5e-5   | **46.85%** | **91.32%** |
+| 5e-4   | 31.88%     | 87.28%     |
+
+---
+
+## 📈 Key Insights
+
+* λ = 0 → no pruning (baseline)
+* Moderate λ → best balance (high sparsity + better accuracy)
+* High λ → over-pruning → accuracy drop
+
+👉 Higher λ increases pruning pressure; too large removes useful connections early.
+
+---
+
+## 📊 Gate Distribution
+
+![Gate Distribution](results/gate_histogram_lambda_5e-05.png)
+
+* Spike near 0 → pruned weights
+* Remaining values → important connections
+
+---
+
+## ⚡ Highlights
+
+* Custom `PrunableLinear` layer
+* Proper gradient flow (weights + gates)
+* Separate LR for gate parameters
+* Checkpointing + reproducibility
+* Auto-generated results (CSV, JSON, plots)
+
+---
+
+## 🔮 Future Work
+
+* Use CNN instead of MLP
+* Structured pruning
+* Adaptive thresholds
+
+---
+
+## 🏁 Summary
+
+The model **learns sparsity during training**, achieving ~90% pruning while maintaining reasonable accuracy.
+
+```
+```
